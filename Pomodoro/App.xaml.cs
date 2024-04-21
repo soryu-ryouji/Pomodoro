@@ -10,5 +10,4 @@ namespace Pomodoro
     public partial class App : Application
     {
     }
-
 }

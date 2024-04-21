@@ -3,47 +3,43 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace Pomodoro
-{
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+namespace Pomodoro;
 
-        private void Button_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+public partial class MainWindow : Window
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+    }
+
+    private TimeSpan _remainingTime;
+    private DispatcherTimer _timer = new();
+    private bool _isPaused = false;
+
+    private void Button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (this.WindowState ==WindowState.Maximized)
+        {
+            this.WindowState = WindowState.Normal;
+            this.DragMove();
+        }
+        else
         {
             this.DragMove();
         }
+    }
 
-        private TimeSpan _remainingTime;
-        private DispatcherTimer _timer = new();
-        private bool _isPaused = false;
-
-        private void ClockButton_Click(object sender, RoutedEventArgs e)
+            private void ClockButton_Click(object sender, RoutedEventArgs e)
         {
             if (_timer.IsEnabled)
             {
-                if (!_isPaused)
-                {
-                    PauseCountDown();
-                }
-                else
-                {
-                    ResumeCountDown();
-                }
+                if (!_isPaused) PauseCountDown();
+                else ResumeCountDown();
             }
             else
             {
-                if (!_isPaused)
-                {
-                    StartWork();
-                }
-                else
-                {
-                    ResumeCountDown();
-                }
+                if (!_isPaused) StartWork();
+                else ResumeCountDown();
             }
         }
 
@@ -87,5 +83,4 @@ namespace Pomodoro
         {
             TimeBlock.Text = time.ToString(@"mm\ \:\ ss");
         }
-    }
 }
