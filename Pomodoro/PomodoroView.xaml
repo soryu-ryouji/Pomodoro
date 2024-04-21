@@ -1,0 +1,38 @@
+﻿<Window x:Class="Pomodoro.PomodoroView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Pomodoro"
+        Height="700" Width="1300"
+        Background="Transparent"
+        WindowStyle="None" AllowsTransparency="True" Icon="/TickTask.png"
+        WindowStartupLocation="CenterScreen"
+        MouseLeftButtonDown="Button_MouseLeftButtonDown">
+    <Grid>
+        <Border Background="Black"
+                CornerRadius="10"/>
+
+        <Button Name="TimeButton"
+                Style="{StaticResource BtnStyle}"
+                Width="400" Height="150"
+                Foreground="Black" Background="Transparent" BorderBrush="Black"
+                Click="TimeButton_Click">
+            <Button.Content>
+                <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="RemainingMinutes"
+                       Text="{Binding RemainingMinutes}"
+                       FontSize="100"
+                       Foreground="White">
+                    </TextBlock>
+                    <TextBlock Text=" : "
+                       FontSize="100"
+                       Foreground="White">
+                    </TextBlock>
+                    <TextBlock x:Name="RemainingSeconds"
+                       Text="{Binding RemainingSeconds}"
+                       FontSize="100"
+                       Foreground="White"></TextBlock>
+                </DockPanel>
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>
