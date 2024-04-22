@@ -4,7 +4,7 @@
         Title="Pomodoro"
         Height="700" Width="1300"
         Background="Transparent"
-        WindowStyle="None" AllowsTransparency="True" Icon="/TickTask.png"
+        WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         MouseLeftButtonDown="Button_MouseLeftButtonDown">
     <Grid>
@@ -15,22 +15,21 @@
                 Style="{StaticResource BtnStyle}"
                 Width="400" Height="150"
                 Foreground="Black" Background="Transparent" BorderBrush="Black"
-                Click="TimeButton_Click">
+                Click="TimeButton_Click"
+                MouseDoubleClick="TimeButton_OnMouseDoubleClick">
             <Button.Content>
                 <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock x:Name="RemainingMinutes"
                        Text="{Binding RemainingMinutes}"
                        FontSize="100"
-                       Foreground="White">
-                    </TextBlock>
+                       Foreground="White" />
                     <TextBlock Text=" : "
                        FontSize="100"
-                       Foreground="White">
-                    </TextBlock>
+                       Foreground="White" />
                     <TextBlock x:Name="RemainingSeconds"
                        Text="{Binding RemainingSeconds}"
                        FontSize="100"
-                       Foreground="White"></TextBlock>
+                       Foreground="White" />
                 </DockPanel>
             </Button.Content>
         </Button>

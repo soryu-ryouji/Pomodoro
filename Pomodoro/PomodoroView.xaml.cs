@@ -11,7 +11,7 @@ public partial class PomodoroView : Window
     public PomodoroView()
     {
         InitializeComponent();
-        _pomodoroViewModel = new PomodoroViewModel();
+        _pomodoroViewModel = PomodoroViewModel.Instance;
 
         this.DataContext =_pomodoroViewModel;
     }
@@ -40,5 +40,10 @@ public partial class PomodoroView : Window
         {
             _pomodoroViewModel.StartWork();
         }
+    }
+
+    private void TimeButton_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        
     }
 }

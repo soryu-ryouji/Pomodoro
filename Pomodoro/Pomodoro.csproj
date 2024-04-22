@@ -19,8 +19,4 @@
     <Content Include="Resources\TickTask.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="TickTask.png" />
-  </ItemGroup>
-
 </Project>
