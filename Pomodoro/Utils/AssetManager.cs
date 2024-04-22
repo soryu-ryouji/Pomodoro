@@ -18,8 +18,8 @@ public class AssetManager
         {
             SaveConfig(
             [
-                ("Work Time", "00:25"),
-                ("Break Time", "00:05")
+                ("Work Time", "25"),
+                ("Break Time", "5")
             ]);
         }
 

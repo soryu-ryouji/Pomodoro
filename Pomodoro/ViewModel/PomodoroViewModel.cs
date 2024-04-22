@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using Pomodoro.Utils;
+using Pomodoro.View;
 
 namespace Pomodoro.ViewModel;
 
@@ -12,16 +15,25 @@ public class PomodoroViewModel : INotifyPropertyChanged
 
         if (configs.Count != 0)
         {
-            WorkTime = TimeSpan.Parse(configs.FirstOrDefault(c => c.name == "Work Time").value.ToString() ?? "00:25");
-            BreakTime = TimeSpan.Parse(configs.FirstOrDefault(c => c.name == "Break Time").value.ToString() ?? "00:05");
+            WorkTime = int.Parse(configs.FirstOrDefault(c => c.name == "Work Time").value.ToString() ?? "25");
+            BreakTime = int.Parse(configs.FirstOrDefault(c => c.name == "Break Time").value.ToString() ?? "5");
         }
         else
         {
-            WorkTime = TimeSpan.FromMinutes(25);
-            BreakTime = TimeSpan.FromMinutes(5);
+            WorkTime = 25;
+            BreakTime = 5;
         }
 
-        RemainingTime = WorkTime;
+        RemainingTime = TimeSpan.FromMinutes(WorkTime);
+    }
+
+    public void SaveModel()
+    {
+        AssetManager.SaveConfig(
+        [
+            ("Work Time",WorkTime),
+            ("Break Time",BreakTime)
+        ]);
     }
 
     private static PomodoroViewModel s_instance;
@@ -53,11 +65,35 @@ public class PomodoroViewModel : INotifyPropertyChanged
 
     private DispatcherTimer _timer = new();
 
-    public bool IsRunning;
+    public bool IsRunning = false;
     public bool IsCountDowning { get; private set; }
 
-    public TimeSpan WorkTime { get; set; } = TimeSpan.FromMinutes(25);
-    public TimeSpan BreakTime { get; set; } = TimeSpan.FromMinutes(5);
+    private int _workTime;
+    private int _breakTime;
+
+    public int WorkTime
+    {
+        get => _workTime;
+        set
+        {
+            if (_workTime == value) return;
+
+            _workTime = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WorkTime)));
+        }
+    }
+
+    public int BreakTime
+    {
+        get => _breakTime;
+        set
+        {
+            if (_breakTime == value) return;
+
+            _breakTime = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BreakTime)));
+        }
+    }
 
     private TimeSpan _remainingTime = TimeSpan.FromMinutes(0);
 
@@ -67,9 +103,8 @@ public class PomodoroViewModel : INotifyPropertyChanged
         set
         {
             _remainingTime = value;
-            var temp = _remainingTime.ToString(@"mm\:ss");
-            RemainingMinutes = temp[..2];
-            RemainingSeconds = temp[3..];
+            RemainingMinutes = ((int)RemainingTime.TotalMinutes).ToString();
+            RemainingSeconds = RemainingTime.Seconds.ToString();
         }
     }
 
@@ -80,7 +115,8 @@ public class PomodoroViewModel : INotifyPropertyChanged
         get => _remainingMinutes;
         private set
         {
-            _remainingMinutes = value;
+            int.TryParse(value, out var min);
+            _remainingMinutes = min < 10 ? $"0{min}" : $"{min}";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemainingMinutes)));
         }
     }
@@ -92,7 +128,8 @@ public class PomodoroViewModel : INotifyPropertyChanged
         get => _remainingSeconds;
         private set
         {
-            _remainingSeconds = value;
+            int.TryParse(value, out var sec);
+            _remainingSeconds = sec < 10 ? $"0{sec}" : $"{sec}";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemainingSeconds)));
         }
     }
@@ -122,13 +159,13 @@ public class PomodoroViewModel : INotifyPropertyChanged
     public void StartWork()
     {
         _state = PomodoroState.Work;
-        StartCountDown(WorkTime);
+        StartCountDown(TimeSpan.FromMinutes(WorkTime));
     }
 
     public void StartBreak()
     {
         _state = PomodoroState.Break;
-        StartCountDown(BreakTime);
+        StartCountDown(TimeSpan.FromMinutes(BreakTime));
     }
 
     private void FinishCountDown()
@@ -139,17 +176,19 @@ public class PomodoroViewModel : INotifyPropertyChanged
         {
             var finishedWorkView = new FinishedWorkView();
             finishedWorkView.Show();
+            finishedWorkView.Topmost = true;
         }
         else if (_state == PomodoroState.Break)
         {
             var finishedBreakView = new FinishedBreakView();
             finishedBreakView.Show();
+            finishedBreakView.Topmost = true;
         }
     }
 
     public void InitView()
     {
-        RemainingTime = WorkTime;
+        RemainingTime = TimeSpan.FromMinutes(WorkTime);
     }
 
     public void PauseCountDown()

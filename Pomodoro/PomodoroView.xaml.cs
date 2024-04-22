@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using Pomodoro.View;
 using Pomodoro.ViewModel;
 
 namespace Pomodoro;
@@ -44,6 +45,8 @@ public partial class PomodoroView : Window
 
     private void TimeButton_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        
+        var configView = new ConfigView();
+        configView.Show();
+        configView.Topmost = true;
     }
 }
