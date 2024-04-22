@@ -1,25 +1,44 @@
 ﻿using System.ComponentModel;
 using System.Windows.Threading;
+using Pomodoro.Utils;
 
 namespace Pomodoro.ViewModel;
 
-public class PomodoroViewModel: INotifyPropertyChanged
+public class PomodoroViewModel : INotifyPropertyChanged
 {
-    public PomodoroViewModel()
+    private PomodoroViewModel()
     {
+        var configs = AssetManager.LoadConfig();
+
+        if (configs.Count != 0)
+        {
+            WorkTime = TimeSpan.Parse(configs.FirstOrDefault(c => c.name == "Work Time").value.ToString() ?? "00:25");
+            BreakTime = TimeSpan.Parse(configs.FirstOrDefault(c => c.name == "Break Time").value.ToString() ?? "00:05");
+        }
+        else
+        {
+            WorkTime = TimeSpan.FromMinutes(25);
+            BreakTime = TimeSpan.FromMinutes(5);
+        }
+
         RemainingTime = WorkTime;
     }
-    private static readonly object s_lockObject = new object();
+
     private static PomodoroViewModel s_instance;
+
+    private static bool s_inited;
 
     public static PomodoroViewModel Instance
     {
         get
         {
-            lock (s_lockObject)
+            if (s_inited is not true)
             {
-                return s_instance ??= new PomodoroViewModel();
+                s_inited = true;
+                s_instance = new PomodoroViewModel();
             }
+
+            return s_instance;
         }
     }
 
@@ -31,11 +50,11 @@ public class PomodoroViewModel: INotifyPropertyChanged
 
     private PomodoroState _state = PomodoroState.Work;
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
     private DispatcherTimer _timer = new();
 
-    public bool IsRunning = false;
-    public bool IsCountDowning { get; private set; } = false;
+    public bool IsRunning;
+    public bool IsCountDowning { get; private set; }
 
     public TimeSpan WorkTime { get; set; } = TimeSpan.FromMinutes(25);
     public TimeSpan BreakTime { get; set; } = TimeSpan.FromMinutes(5);
@@ -54,14 +73,11 @@ public class PomodoroViewModel: INotifyPropertyChanged
         }
     }
 
-    private string _remainingMinutes;
+    private string _remainingMinutes = "";
 
     public string RemainingMinutes
     {
-        get
-        { 
-            return _remainingMinutes;
-        }
+        get => _remainingMinutes;
         private set
         {
             _remainingMinutes = value;
@@ -69,7 +85,7 @@ public class PomodoroViewModel: INotifyPropertyChanged
         }
     }
 
-    private string _remainingSeconds;
+    private string _remainingSeconds = "";
 
     public string RemainingSeconds
     {
