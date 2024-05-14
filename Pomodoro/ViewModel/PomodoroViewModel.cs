@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using System.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using Pomodoro.Utils;
@@ -171,6 +172,7 @@ public class PomodoroViewModel : INotifyPropertyChanged
     private void FinishCountDown()
     {
         PauseCountDown();
+        SystemSounds.Hand.Play();
 
         if (_state == PomodoroState.Work)
         {
